@@ -1,0 +1,280 @@
+<form name="vm.dtset" novalidate ng-submit="vm.datasourceSubmit()">
+
+<div class="widgets row col-md-12">
+
+    <div ba-panel ba-panel-title="Fonte de Dados" ba-panel-class="with-scroll">
+        <div class="row col-md-12">
+            <div class="col-sm-12">
+                <div class="form-group" ng-class="{'has-error': vm.dtset.idDatabase.$invalid && (vm.dtset.idDatabase.$dirty || vm.dtset.$submitted)}">
+                    <label for="idDatabase">SGBD:</label>
+                    <select class="form-control" name="idDatabase" id="idDatabase" ng-model="vm.dataset.idDatabase" required="true">
+                        <option ng-repeat="option in vm.availableOptions" value="{{option._id}}">{{option.sgbdId}} : {{option.url}}</option>
+                    </select>
+                    <span class="help-block error-block basic-block">Required</span>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="form-group" ng-class="{'has-error': vm.dtset.sqlQuery.$invalid && (vm.dtset.sqlQuery.$dirty || vm.dtset.$submitted)}">
+                    <label for="sqlQuery">Informe a consulta para selecionar os dados (extrair):</label>
+                    <textarea class="form-control" rows="2" placeholder="select * from..." id="sqlQuery" name="sqlQuery" ng-model="vm.dataset.sqlQuery" required="true" style="height: 50px"></textarea>
+                    <span class="help-block error-block basic-block">Required</span>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div class="form-group" ng-class="{'has-error': vm.dtset.collectionIdColumnName.$invalid && (vm.dtset.collectionIdColumnName.$dirty || vm.dtset.$submitted)}">
+                    <label for="collectionIdColumnName">Dentre as colunas da consulta acima, informe qual será a chave:</label>
+                    <input type="text" class="form-control" id="collectionIdColumnName" name="collectionIdColumnName" placeholder="Chave" ng-model="vm.dataset.collectionIdColumnName" required="true">
+                    <span class="help-block error-block basic-block">Required</span>
+                </div>
+            </div>            
+        </div>
+    </div>
+    <div ba-panel ba-panel-title="Metadados - Descritivos e Identificador" ba-panel-class="with-scroll">
+        <div class="row col-md-12">
+            <div class="col-sm-6">
+              <div class="form-group" ng-class="{'has-error': vm.dtset.datasetTitle.$invalid && (vm.dtset.datasetTitle.$dirty || vm.dtset.$submitted)}">
+                <label for="datasetTitle">Informe o Título:</label>
+                <input type="text" autocomplete="new-title" class="form-control" id="datasetTitle" ng-keyup="generateURI()" name="datasetTitle" placeholder="Título do Conjunto de Dados" ng-model="vm.dataset.datasetTitle" required="true">
+                <span class="help-block error-block basic-block">Required</span>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group" ng-class="{'has-error': vm.dtset.identifierURI.$invalid && (vm.dtset.identifierURI.$dirty || vm.dtset.$submitted)}">
+                <label for="identifierURI">Identificador URI (automático)</label>
+                <div class="col-md-12">
+                    <div class="col-sm-2" style="margin-top: 10px;">/dataset/</div>
+                    <div class="col-md-10">
+                        <input type="text" class="form-control ng-pristine ng-untouched ng-valid ng-empty" id="identifierURI" placeholder="** Gerado automático´**" name="identifierURI" ng-model="vm.dataset.identifierURI" readonly="true" style="border:0 !important; padding-left: 0;">
+                        <span class="help-block error-block basic-block">Required</span>
+                    </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="row col-md-12">
+            <div class="col-sm-12">
+              <div class="form-group" ng-class="{'has-error': vm.dtset.description.$invalid && (vm.dtset.description.$dirty || vm.dtset.$submitted)}">
+                <label for="description">Descrição:</label>
+                <textarea class="form-control" rows="3" placeholder="Informações úteis sobre o conjunto de dados" id="description" name="description" ng-model="vm.dataset.description" required="true"></textarea>
+                <span class="help-block error-block basic-block">Required</span>
+              </div>
+            </div>
+        </div>
+        <div class="row col-md-12">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <div class="form-group" ng-class="{'has-error': vm.dtset.keywords.$invalid && (vm.dtset.keywords.$dirty || vm.dtset.$submitted)}">
+                        <label for="keywords">Tags:</label>
+                        <input type="text" tag-input="primary" id="keywords" name="keywords" value="Exemplo" data-role="tagsinput" placeholder="Add Tag" ng-model="vm.dataset.keywords" required="true">
+                        <span class="help-block error-block basic-block">Required</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                  <div class="form-group" ng-class="{'has-error': vm.dtset.theme.$invalid && (vm.dtset.theme.$dirty || vm.dtset.$submitted)}">
+                    <label for="theme">Categoria:</label>
+                    <input type="text" class="form-control" id="theme" name="theme" placeholder="Categoria do Conjunto de Dados" ng-model="vm.dataset.theme" required="true">
+                    <span class="help-block error-block basic-block">Required</span>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ba-panel ba-panel-title="Metadados - Licença e Proveniência" ba-panel-class="with-scroll">
+        <div class="row col-md-12">
+            <div class="col-sm-12">
+                <div class="form-group" ng-class="{'has-error': vm.dtset.license.$invalid && (vm.dtset.license.$dirty || vm.dtset.$submitted)}">
+                    <label for="license">Licença:</label>
+                    <select class="form-control select" data-live-search="true"  id="license" name="license" ng-model="vm.dataset.license" required="true">
+                        <option value="cc-by" >Creative Commons Atribuição</option>
+                        <option value="cc-by-sa" >Creative Commons Atribuição e Compartilhamento pela mesma Licença</option>
+                        <option value="cc-zero" >Creative Commons CCZero</option>
+                        <option value="cc-nc" >Creative Commons Não-Comercial (Qualquer)</option>
+                        <option value="odc-odbl" >Licença Aberta para Bases de Dados (ODbL) do Open Data Commons</option>
+                        <option value="gfdl" >Licença GNU para Documentação Livre</option>
+                        <option value="odc-by" >Licença de Atribuição do Open Data Commons</option>
+                        <option value="odc-pddl" >Licença e Dedicação ao Domínio Público do Open Data Commons (PDDL)</option>
+                        <option value="notspecified" >Licença não especificada</option>
+                        <option value="uk-ogl" >Open Government Licence do Reino Unido (OGL)</option>
+                        <option value="other-open" >Outra (Aberta)</option>
+                        <option value="other-at" >Outra (Atribuição)</option>
+                        <option value="other-pd" >Outra (Domínio Público)</option>
+                        <option value="other-closed" >Outra (Não Aberta)</option>
+                        <option value="other-nc" >Outra (Não-Comercial)</option>
+                    </select>
+                    <span class="help-block error-block basic-block">Required</span>
+                </div>
+            </div>
+        </div>
+        <div class="row col-md-12">
+            <div class="col-sm-4">
+                <div class="form-group">
+                  <div class="form-group" ng-class="{'has-error': vm.dtset.publisher.$invalid && (vm.dtset.publisher.$dirty || vm.dtset.$submitted)}">
+                    <label for="publisher">Entidade Responsável:</label>
+                    <input type="text" class="form-control" id="publisher" name="publisher" placeholder="Responsável por tornar disponível" ng-model="vm.dataset.publisher" required="true">
+                    <span class="help-block error-block basic-block">Required</span>
+                  </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                  <div class="form-group" ng-class="{'has-error': vm.dtset.creator.$invalid && (vm.dtset.creator.$dirty || vm.dtset.$submitted)}">
+                    <label for="creator">Criador:</label>
+                    <input type="text" class="form-control" id="creator" name="creator" placeholder="Criador do Conjunto de Dados" ng-model="vm.dataset.creator" required="true">
+                    <span class="help-block error-block basic-block">Required</span>
+                  </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                  <div class="form-group" ng-class="{'has-error': vm.dtset.contactPoint.$invalid && (vm.dtset.contactPoint.$dirty || vm.dtset.$submitted)}">
+                    <label for="contactPoint">Contato:</label>
+                    <input type="text" class="form-control" id="contactPoint" name="contactPoint" placeholder="Contato email@email..." ng-model="vm.dataset.contactPoint" required="true">
+                    <span class="help-block error-block basic-block">Required</span>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ba-panel ba-panel-title="Metadados - Cobertura" ba-panel-class="with-scroll">
+        <div class="row col-md-12">
+            <div class="col-sm-4">
+                <div class="form-group">
+                  <div class="form-group" ng-class="{'has-error': vm.dtset.period.$invalid && (vm.dtset.period.$dirty || vm.dtset.$submitted)}">
+                    <label for="period">Cobertura Temporal:</label>
+                    <input type="text" class="form-control" id="period" name="period" placeholder="Período temporal que cobre" ng-model="vm.dataset.period" required="true">
+                    <span class="help-block error-block basic-block">Required</span>
+                  </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                  <div class="form-group" ng-class="{'has-error': vm.dtset.spatialCoverage.$invalid && (vm.dtset.spatialCoverage.$dirty || vm.dtset.$submitted)}">
+                    <label for="spatialCoverage">Cobertura Espacial:</label>
+                    <input type="text" class="form-control" id="spatialCoverage" name="spatialCoverage" placeholder="Cobertura espacial" ng-model="vm.dataset.spatialCoverage" required="true">
+                    <span class="help-block error-block basic-block">Required</span>
+                  </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                  <div class="form-group" ng-class="{'has-error': vm.dtset.language.$invalid && (vm.dtset.language.$dirty || vm.dtset.$submitted)}">
+                    <label for="language">Linguagem:</label>
+                    <input type="text" class="form-control" id="language" name="language" value="PT-BR" placeholder="Linguagem" ng-model="vm.dataset.language" required="true">
+                    <span class="help-block error-block basic-block">Required</span>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ba-panel ba-panel-title="Metadados - Atualização" ba-panel-class="with-scroll">
+        <div class="row col-md-12">
+          <div class="form-group">  
+              
+              <label for="updateFrequency">Frequência de atualização: </label>
+
+              <label class="radio-inline custom-radio nowrap">
+                <input type="radio" name="updateFrequency" id="updateFrequency" value="0" ng-model="vm.dataset.updateFrequency">
+                <span> Por hora</span>
+              </label>
+              <label class="radio-inline custom-radio nowrap">
+                <input type="radio" name="updateFrequency" id="updateFrequency" value="1" ng-model="vm.dataset.updateFrequency">
+                <span>Diário</span>
+              </label>
+              <label class="radio-inline custom-radio nowrap">
+                <input type="radio" name="updateFrequency" id="updateFrequency" value="2" ng-model="vm.dataset.updateFrequency">
+                <span>Semanal</span>
+              </label>
+              <label class="radio-inline custom-radio nowrap">
+                <input type="radio" name="updateFrequency" id="updateFrequency" value="3" ng-model="vm.dataset.updateFrequency" checked>
+                <span>Mensal</span>
+              </label>
+              <label class="radio-inline custom-radio nowrap">
+                <input type="radio" name="updateFrequency" id="updateFrequency" value="4" ng-model="vm.dataset.updateFrequency">
+                <span>Semestral</span>
+              </label>
+              <label class="radio-inline custom-radio nowrap">
+                <input type="radio" name="updateFrequency" id="updateFrequency" value="5" ng-model="vm.dataset.updateFrequency">
+                <span>Anual</span>
+              </label>
+           </div>
+        </div>
+
+        <span 
+            ng-if="!vm.dataset.idDatabase || 
+            !vm.dataset.collectionIdColumnName || 
+            !vm.dataset.sqlQuery || 
+            !vm.dataset.datasetTitle || 
+            !vm.dataset.identifierURI || 
+            !vm.dataset.description || 
+            !vm.dataset.description || 
+            !vm.dataset.keywords || 
+            !vm.dataset.theme || 
+            !vm.dtset.license || 
+            !vm.dataset.publisher || 
+            !vm.dataset.creator || 
+            !vm.dataset.contactPoint || 
+            !vm.dataset.period || 
+            !vm.dataset.spatialCoverage || 
+            !vm.dataset.language || 
+            !vm.dataset.updateFrequency">Preencha todos os campos para realizar o cadastro.</span>
+        <button 
+            type="submit" 
+            class="btn btn-primary"
+            data-ng-disabled="!vm.dataset.idDatabase || 
+                            !vm.dataset.collectionIdColumnName || 
+                            !vm.dataset.sqlQuery || 
+                            !vm.dataset.datasetTitle || 
+                            !vm.dataset.identifierURI || 
+                            !vm.dataset.description || 
+                            !vm.dataset.description || 
+                            !vm.dataset.keywords || 
+                            !vm.dataset.theme || 
+                            !vm.dtset.license || 
+                            !vm.dataset.publisher || 
+                            !vm.dataset.creator || 
+                            !vm.dataset.contactPoint || 
+                            !vm.dataset.period || 
+                            !vm.dataset.spatialCoverage || 
+                            !vm.dataset.language || 
+                            !vm.dataset.updateFrequency">Salvar!</button>
+
+    </div>
+
+</div>
+</form>
+<!-- / End Form -->
+
+<!--
+{ 
+OK "idDatabase": "1"
+"codigo": "200b7adf98c65c4081cf56a207877c4e",
+OK "collectionIdColumnName": "id",
+OK "sqlQuery": "select * from usuarios",
+
+OK "datasetTitle": "Usuario3",
+
+OK "uri": "" #CRIAR,
+OK "license": "" #CRIAR,
+
+OK "description": "Dataset de clientes para teste",
+"keyword": "Key1, Key2, Key3",
+OK "theme": "Unico",
+
+
+OK "publisher": "Lairson",
+OK "creator": "Lairson",
+OK "contactPoint": "lerao@cin.ufpe.br",
+
+OK "updateFrequency": "0",
+
+OK "period": "2017",
+OK "specialCoverage": "Recife-PE-BRA",
+OK "language": "pt",
+"dateTimeFormats": "ISO",
+
+}
+
+
+-->

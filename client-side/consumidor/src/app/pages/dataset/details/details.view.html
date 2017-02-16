@@ -1,0 +1,75 @@
+<div class="horizontal-scroll">
+ <h1>{{vm.datasetTitle | uppercase}}</h1>
+ <br>
+
+  <div ba-panel ba-panel-title="Metadados <a href ng-href='{{vm.linkMetadadosApi}}' target='_blank' class='right btn btn-default btn-with-icon btn-xs'><i class='ion-arrow-swap'></i> Metadados em JSON</a>" ba-panel-class="with-scroll">
+  <table st-table="vm.rowCollectionDetails" class="table table-striped">
+    <thead>
+      <tr>
+        <th>Metadado</th>
+        <th>Informação</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="(key, data) in vm.rowCollectionDetails">
+        <td>{{key}}</td>
+        <td>{{data}}</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div ba-panel ba-panel-title="Acesso" ba-panel-class="with-scroll">
+    <div class="col-md-12">
+      <div class="col-md-6">
+        Bulk download:
+        <br clear="all">
+        <span ng-repeat="opt in vm.download" ng-bind-html-unsafe="opt.text">
+            <a href ng-href="{{vm.linkUri}}{{ opt.Formato }}/download" target="_blank" class="btn btn-default btn-with-icon"><i class="ion-android-download"></i>{{ opt.Formato | uppercase }}</a>
+        </span>
+      </div>
+      <div class="col-md-6">
+        API
+        <br clear="all">
+        <span ng-repeat="opt in vm.download " ng-bind-html-unsafe="opt.text">
+            <a href ng-show="opt.Formato != 'csv'" ng-href="{{vm.linkUri}}{{ opt.Formato }}" target="_blank" class="btn btn-default btn-with-icon"><i class="ion-arrow-swap"></i>{{ opt.Formato | uppercase }}</a>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div ba-panel ba-panel-title="Versões <a href ng-href='{{vm.linkVersoes}}' target='_blank' class='right btn btn-default btn-with-icon btn-xs'><i class='ion-arrow-swap'></i> Versões em JSON</a>" ba-panel-class="with-scroll">
+    <div class="horizontal-scroll">
+      <table st-safe-src="vm.rowCollection" st-table="rowCollectionData" class="table table-striped">
+        <thead>
+        <tr class="sortable">
+          <th class="table-id" st-sort="id" st-sort-default="true">#Id_Versão</th>
+          <th st-sort="description">Descrição</th>
+          <th st-sort="date">Data/Hora</th>
+        </tr>
+        <tr>
+            <th><input st-search="version" placeholder="Filtrar por Id" class="input-sm form-control search-input"
+                       type="search"/></th>
+            <th><input st-search="description" placeholder="Filtrar por descrição" class="input-sm form-control search-input"
+                       type="search"/></th>
+            <th><input st-search="date" placeholder="Filtrar por data/hora" class="input-sm form-control search-input" type="search"/></th>
+          </tr>  
+        </thead>
+        <tbody>
+        <tr ng-repeat="row in rowCollectionData">
+          <td class="table-id">{{row.version}}</td>
+          <td><a href="#/dataset/details/{{vm.datasetURI}}/{{row.version}}" title="Clique para acessar os dados e metadados desta versão">{{row.description}}</a></td>
+          <td>{{row.date}}</td>
+        </tr>
+        </tbody>
+
+      </table>
+    </div>
+
+  </div>
+  
+  <div ba-panel ba-panel-title="Atualização" ba-panel-class="with-scroll">
+    <div class="col-md-12">
+      Próxima Atualização: {{vm.proxAtualizacao}} 
+    </div>
+  </div>

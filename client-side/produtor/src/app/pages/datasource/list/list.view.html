@@ -1,0 +1,31 @@
+<table st-table="vm.rowCollection" class="table table-striped">
+  <thead>
+  <tr>
+    <th st-sort="sgbdId">Fonte</th>
+    <th st-sort="url">HOST</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr ng-repeat="row in vm.rowCollection">
+    <td>{{row.sgbdId}}</td>
+    <td>{{row.url}}</td>
+  </tr>
+  </tbody>
+</table>
+
+<br/><br/>
+<h2>TIPOS</h2>
+<table st-table="vm.rowCollectionTypes" class="table table-striped">
+  <thead>
+  <tr>
+    <th st-sort="SGBD">Tipo</th>
+    <th st-sort="id">ID</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr ng-repeat="row in vm.rowCollectionTypes">
+    <td>{{row.SGBD}}</td>
+    <td>{{row.id}}</td>
+  </tr>
+  </tbody>
+</table>

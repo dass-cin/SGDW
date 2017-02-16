@@ -1,0 +1,47 @@
+<div class="horizontal-scroll">
+  <div class="form-group select-page-size-wrap ">
+    <label>Rows on page
+      <select class="form-control show-tick" title="Rows on page" ng-model="smartTablePageSize" ng-options="i for i in [5,10,15,20,25]">
+      </select>
+    </label>
+  </div>
+  <table st-safe-src="vm.rowCollection" st-table="rowCollectionData" class="table table-striped">
+    <thead>
+    <tr class="sortable">
+      <th class="table-id" st-sort="id" st-sort-default="true">#</th>
+      <th st-sort="getters.dataset_title">Conjunto de Dados</th>
+      <th st-sort="publisher">Produtor</th>
+      <th st-sort="theme">Categoria</th>
+      <th st-sort="keywords">Keywords</th>
+    </tr>
+    <tr>
+        <th></th>
+        <th><input st-search="dataset_title" placeholder="Filtrar Conjunto de Dados" class="input-sm form-control search-input"
+                   type="search"/></th>
+        <th><input st-search="publisher" placeholder="Filtrar por Produtor" class="input-sm form-control search-input" type="search"/></th>
+        <th><input st-search="theme" placeholder="Filtrar por Categoria" class="input-sm form-control search-input"
+                   type="search"/></th>
+        <th><input st-search="keywords" placeholder="Filtrar por Keyword" class="input-sm form-control search-input"
+                   type="search"/></th>
+      </tr>  
+    </thead>
+    <tbody>
+    <tr ng-repeat="row in rowCollectionData">
+      <td class="table-id">{{$index}}</td>
+      <td><a href="#/dataset/details/{{row.collector_dataset}}" title="Clique para mais detalhes do Conjunto de Dados: {{row.dataset_title | uppercase}}">{{row.dataset_title | uppercase}}</a></td>
+      <td>{{row.publisher | uppercase}}</td>
+      <td>{{row.theme | uppercase}}</td>
+      <td><span class="tag label label-primary">{{row.keywords}}</span></td>
+    </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="5" class="text-center">
+          <div st-pagination="" st-items-by-page="rowCollectionPageSize" st-displayed-pages="5"></div>
+        </td>
+      </tr>
+      </tfoot>
+  </table>
+</div>
+
+

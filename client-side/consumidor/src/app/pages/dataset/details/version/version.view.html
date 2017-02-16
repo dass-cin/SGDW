@@ -1,0 +1,39 @@
+<div class="horizontal-scroll">
+ <h1>{{vm.datasetTitle | uppercase}} (versão: {{vm.version}})</h1>
+ <br>
+
+  <div ba-panel ba-panel-title="Metadados" ba-panel-class="with-scroll">
+  <table st-table="vm.rowCollection" class="table table-striped">
+    <thead>
+      <tr>
+        <th>Metadado</th>
+        <th>Informação</th>
+      </tr>      
+    </thead>
+    <tbody>       
+      <tr ng-repeat="(key, data) in vm.rowCollection">
+        <td>{{key}}</td>
+        <td>{{data}}</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div ba-panel ba-panel-title="Acesso" ba-panel-class="with-scroll">
+    <div class="col-md-12">
+      <div class="col-md-6">
+        Bulk download:
+        <br clear="all">
+        <span ng-repeat="opt in vm.download" ng-bind-html-unsafe="opt.text">
+            <a href ng-href="{{vm.linkUri}}{{ opt.Formato }}/download" target="_blank" class="btn btn-default btn-with-icon"><i class="ion-android-download"></i>{{ opt.Formato | uppercase }}</a>
+        </span>
+      </div>
+      <div class="col-md-6">
+        API <a href="">(ver documentação)</a>:
+        <br clear="all">
+        <span ng-repeat="opt in vm.download " ng-bind-html-unsafe="opt.text">
+            <a href ng-show="opt.Formato != 'csv'" ng-href="{{vm.linkUri}}{{ opt.Formato }}" target="_blank" class="btn btn-default btn-with-icon"><i class="ion-arrow-swap"></i>{{ opt.Formato | uppercase }}</a>
+        </span>
+      </div>
+    </div>
+  </div>

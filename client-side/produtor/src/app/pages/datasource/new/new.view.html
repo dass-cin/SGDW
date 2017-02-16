@@ -1,0 +1,75 @@
+<form name="vm.formDS" novalidate ng-controller="DataSourceNewCtrl as dataSourceVm" ng-submit="vm.datasourceSubmit()">
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="form-group" ng-class="{'has-error': vm.formDS.sgbdId.$invalid && (vm.formDS.sgbdId.$dirty || vm.formDS.$submitted)}">
+        <label for="sgbdId">SGBD:</label>
+        <select class="form-control" name="sgbdId" id="sgbdId" ng-model="vm.datasource.sgbdId" required>
+          <option ng-repeat="option in vm.availableOptions" value="{{option.id}}">{{option.SGBD}}</option>
+        </select>
+        <span class="help-block error-block basic-block">Required</span>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group" ng-class="{'has-error': vm.formDS.url.$invalid && (vm.formDS.url.$dirty || vm.formDS.$submitted)}">
+        <label for="url">String de Conexão:</label>
+        <input type="text" class="form-control" id="url" name="url" placeholder="jdbc:mysql://localhost/" ng-model="vm.datasource.url" required>
+        <span class="help-block error-block basic-block">Required</span>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="form-group" ng-class="{'has-error': vm.formDS.user.$invalid && (vm.formDS.user.$dirty || vm.formDS.$submitted)}">
+        <label for="user">User</label>
+        <input type="text" class="form-control" id="user" name="user" placeholder="User" ng-model="vm.datasource.user" required>
+        <span class="help-block error-block basic-block">Required</span>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group" ng-class="{'has-error': vm.formDS.password.$invalid && (vm.formDS.password.$dirty || vm.formDS.$submitted)}">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="Password" ng-model="vm.datasource.password" required>
+        <span class="help-block error-block basic-block">Required</span>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+     <div class="col-sm-6">
+      <div class="form-group" ng-class="{'has-error': vm.formDS.bdName.$invalid && (vm.formDS.bdName.$dirty || vm.formDS.$submitted)}">
+        <label for="bdName">Database</label>
+        <input type="text" class="form-control" id="bdName" name="bdName" placeholder="Nome do Banco de Dados" ng-model="vm.datasource.bdName" required>
+        <span class="help-block error-block basic-block">Required</span>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="description">Descrição:</label>
+        <input type="text" class="form-control" id="description" name="description" placeholder="Descrição..." ng-model="vm.datasource.description">
+      </div>
+    </div>
+  </div>
+  <button type="submit" data-ng-disabled="!vm.datasource.sgbdId || !vm.datasource.url || !vm.datasource.user || !vm.datasource.bdName || !vm.datasource.password " class="btn btn-primary">Salvar!</button>
+</form>
+
+<br><br>
+<h3>Exemplos de string de conexão:</h3>
+<br>
+<ul>
+  <li><u>MySQL:</u> <em>jdbc:mysql://HOST/DABATASE<BR></em></li>
+  <li><u>ORACLE:</u> <em>jdbc:oracle:thin:@HOST:PORTA:DATABASE</em></li>
+  <li><u>SQL Server</u> <em>jdbc:sqlserver://HOST/INSTANCE/PORTA</em></li>
+  <li><u>PostgreSQL</u> <em>jdbc:postgresql://HOST/DATABASE</em></li>
+</ul>
+*Acrescentar alternativamente o "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&characterEncoding=UTF-8" para corrigir problemas de codificações.
+
+<!--
+{ 
+"codigo": "8028e143743a00dd7112842b75770b1a",
+"sgbdId": "2",
+"url": "jdbc:mysql://localhost/",
+"user": "root",
+"password": "",
+"bdName": "rs2",
+"description": "MSSQL"
+}
+-->
