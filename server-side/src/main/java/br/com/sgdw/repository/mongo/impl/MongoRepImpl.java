@@ -366,6 +366,20 @@ public class MongoRepImpl implements MongoRep{
 		
 		return config;
 	}
+	
+	@Override
+	public void updateMetadata(String collectionName, String type, String description)
+	{	
+		DBCollection collection = getCollection(MongoVariables.CONF_COLLECTION.valor);
+		BasicDBObject query = new BasicDBObject();
+		query.put(CollectionConfVariables.COLLECTION_NAME.valor, collectionName);
+		
+		BasicDBObject builder = new BasicDBObject();
+		builder.append(CollectionConfVariables.COLLECTION_PRESERVE.valor, type);
+		builder.append(CollectionConfVariables.COLLECTION_PRESERVE_DESCRIPTION.valor, description);
+		
+		collection.update(query,  new BasicDBObject("$set", builder), true, false); //upsert
+	}
 }
 
 

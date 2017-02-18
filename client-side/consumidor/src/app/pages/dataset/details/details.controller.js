@@ -1,4 +1,4 @@
-(function () {
+  (function () {
   'use strict';
 
   angular
@@ -17,6 +17,14 @@
     vm.linkVersoes            = getApiVersoes();
     vm.atualizarDatasetSubmit = atualizar;
     vm.rowCollection          = [];   
+
+    DatasetService.getPreservacao(vm.datasetURI).success(
+      function(data) {     
+        console.log(data); 
+          if (data==true) {
+             window.location = "410.html";
+          } 
+      }); 
 
     DatasetService.getAllFormats().success(
       function(data, status, headers, config) {      

@@ -83,6 +83,7 @@ public class CreateServImpl implements CreateServ{
 			novaCollectionMap.put(CollectionConfVariables.COLLECTION_IDENTIFIER_URI.valor, novo.getIdentifierURI());
 			novaCollectionMap.put(CollectionConfVariables.COLLECTION_LICENSE.valor, novo.getLicense());
 			novaCollectionMap.put(CollectionConfVariables.COLLECTION_TITLE.valor, novo.getDatasetTitle());
+			novaCollectionMap.put(CollectionConfVariables.COLLECTION_PRESERVE.valor, CollectionConfVariables.PRESERVACAO_DEFAULT.valor);
 			
 			Map<String, Object> novoHistorico = new HashMap<>();
 			novoHistorico.put(CollectionHistory.DATE.valor, new Date().toString());

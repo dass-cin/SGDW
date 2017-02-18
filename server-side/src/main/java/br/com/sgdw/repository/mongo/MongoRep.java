@@ -29,4 +29,6 @@ public interface MongoRep {
 
 	DbConfig getDbConfig(String id);
 
+	void updateMetadata(String collectionName, String type, String description);
+
 }

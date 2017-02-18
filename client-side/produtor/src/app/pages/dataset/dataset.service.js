@@ -17,7 +17,8 @@
             setDataset: _setDataset,
             setAtualizarDataset: _setAtualizarDataset,
             getAllVersions: _getAllVersions,
-            getByVersion: _getByVersion
+            getByVersion: _getByVersion,
+            setPreservarDataset: _setPreservarDataset,
         };
 
         return service;
@@ -38,8 +39,8 @@
                 });
         }
 
-        function _getByIdDataset (id) {
-                var urlCompleta = apiUrl() + "open/" + id + "/about/";
+        function _getByIdDataset (id, codigo) {
+                var urlCompleta = apiUrl() + "admin/" + id + "/about/" + codigo +"";
                 return $http.get(urlCompleta);
         };
 
@@ -75,7 +76,20 @@
                 }, function() {
                     $callback(false);
                 });
-        };        
+        };       
+
+        function _setPreservarDataset(atualizacaoManual, $callback) {
+            $http({
+                url: apiUrl() + 'admin/preservar_dataset',
+                method: 'POST',
+                data: atualizacaoManual
+            }).then(
+                function (response) {
+                    $callback(true);     
+                }, function() {
+                    $callback(false);
+                });
+        };  
 
         function _getAllVersions (dataset) {
             return $http({
@@ -91,7 +105,6 @@
                 });
         }; 
         
-
     }
 
 })();

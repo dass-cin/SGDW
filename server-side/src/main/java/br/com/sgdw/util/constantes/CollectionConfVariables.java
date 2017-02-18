@@ -21,7 +21,10 @@ public enum CollectionConfVariables {
 	COLLECTION_ID_DB("id_db"),
 	COLLECTION_LICENSE("license"),
 	COLLECTION_IDENTIFIER_URI("identifier_uri"),
-	COLLECTION_TITLE("dataset_title");
+	COLLECTION_TITLE("dataset_title"),
+	COLLECTION_PRESERVE("presevation"),
+	COLLECTION_PRESERVE_DESCRIPTION("presevation_description"),
+	PRESERVACAO_DEFAULT("Publicado");
 	
 	public String valor;
 	

@@ -27,15 +27,15 @@
          toastr.error("Erro ao carregar os Formatos de dados", 'Erro!'); //success,info,warning
     });   
 
-    function getUriDownload(){
+    function getUriApi(){
       return apiUrl();
     };
 
     function getUriDownload(){
-      return apiUrl() + "find/" + vm.datasetURI + "/version/" + vm.version + "/format/";
+      return apiUrl() + "open/" + vm.datasetURI + "/version/" + vm.version + "/format/";
     };
 
-    DatasetService.getByIdDataset($stateParams.collector_dataset).success(
+    DatasetService.getByIdDataset($stateParams.collector_dataset, JSON.parse(getCurrentUser()).codigo).success(
       function(data, status, headers, config) {
          
           vm.rowCollectionDetails = data;

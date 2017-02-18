@@ -6,7 +6,8 @@ public enum CollectionHistory {
 	DATASET_NAME("dataset_name"),
 	VERSION("version"),
 	DATE("date"),
-	DESCRIPTION("description");
+	DESCRIPTION("description"),
+	MOTIVO("motivo");
 	
 	public String valor;
 	

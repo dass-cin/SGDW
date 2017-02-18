@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,6 +27,7 @@ import br.com.sgdw.dto.DatabaseConfig;
 import br.com.sgdw.dto.NovaSenha;
 import br.com.sgdw.dto.NovoDataset;
 import br.com.sgdw.dto.NovoUsuario;
+import br.com.sgdw.dto.PreservarDataset;
 import br.com.sgdw.dto.TokenAutenticacao;
 import br.com.sgdw.dto.UsuarioAutenticacao;
 import br.com.sgdw.dto.UriValidacao;
@@ -33,6 +35,7 @@ import br.com.sgdw.service.AccessServ;
 import br.com.sgdw.service.CreateServ;
 import br.com.sgdw.service.DataSourceServ;
 import br.com.sgdw.service.IdentifierServ;
+import br.com.sgdw.service.PreservationServ;
 import br.com.sgdw.service.UpdateServ;
 import br.com.sgdw.service.UserServ;
 
@@ -63,6 +66,9 @@ public class AdminRest {
 	@Autowired
 	IdentifierServ identifierServ;
 	
+	@Autowired
+	PreservationServ preservationServ;
+	
 	@CrossOrigin(methods = {RequestMethod.POST})
     @ApiOperation(value = "Adiciona novo conjunto de dados", nickname = "add_dataset", 
     		notes="Esta rota permite adicionar um novo conjunto de dados")
@@ -81,8 +87,8 @@ public class AdminRest {
 	}
 	
 	@CrossOrigin(methods = {RequestMethod.POST})
-    @ApiOperation(value = "Adiciona novo Produtor (usu·rio)", nickname = "add_user", 
-    		notes="Esta rota permite adicionar um novo usu·rio/produtor")
+    @ApiOperation(value = "Adiciona novo Produtor (usu√°rio)", nickname = "add_user", 
+    		notes="Esta rota permite adicionar um novo usu√°rio/produtor")
     @RequestMapping(method = RequestMethod.POST, path="/add_user")	
     public void addUser(@RequestBody NovoUsuario novo, HttpServletResponse response)
 	{
@@ -137,8 +143,8 @@ public class AdminRest {
 	}
 	
     @CrossOrigin(methods = {RequestMethod.POST})
-    @ApiOperation(value = "Verifica se o token È v·lido", nickname = "checar_token_usuario", 
-    		notes="Esta rota permite verificar se o token È v·lido")
+    @ApiOperation(value = "Verifica se o token √© v√°lido", nickname = "checar_token_usuario", 
+    		notes="Esta rota permite verificar se o token √© v√°lido")
     @RequestMapping(method = RequestMethod.POST, path="/checar_token_usuario")	
 	public @ResponseBody Boolean checarToken(@RequestBody TokenAutenticacao tk, HttpServletResponse response)
 	{	
@@ -165,8 +171,8 @@ public class AdminRest {
 	}
 	
     @CrossOrigin(methods = {RequestMethod.POST})
-    @ApiOperation(value = "Checar se a URI È v·lida", nickname = "checar_uri", 
-    		notes="Esta rota permite checar se uma URI È v·lida")
+    @ApiOperation(value = "Checar se a URI √© v√°lida", nickname = "checar_uri", 
+    		notes="Esta rota permite checar se uma URI √© v√°lida")
     @RequestMapping(method = RequestMethod.POST, path="/checar_uri")	
 	public @ResponseBody Boolean checarURI(@RequestBody UriValidacao uri, HttpServletResponse response){
 		Boolean valido = false;
@@ -184,7 +190,7 @@ public class AdminRest {
 	}
     
     @CrossOrigin(methods = {RequestMethod.POST})
-    @ApiOperation(value = "Lista dos conjuntos de dados cadastrados (padr„o produtor)", nickname = "list_datasets", 
+    @ApiOperation(value = "Lista dos conjuntos de dados cadastrados (padr√£o produtor)", nickname = "list_datasets", 
     		notes="Esta rota permite listar os conjuntos de dados com campos adicionais apenas para o Produtor")
     @RequestMapping(method = RequestMethod.POST, path="/list_datasets")	
 	public String listDatasets(@RequestBody TokenAutenticacao tk, HttpServletResponse response)
@@ -204,14 +210,14 @@ public class AdminRest {
 	}
 	
     @CrossOrigin(methods = {RequestMethod.POST})
-    @ApiOperation(value = "Realizar atualizaÁ„o manual de um conjunto de dados", nickname = "atualizar_dataset", 
+    @ApiOperation(value = "Realizar atualiza√ß√£o manual de um conjunto de dados", nickname = "atualizar_dataset", 
     		notes="Esta rota permite atualizar um conjunto de dados")
     @RequestMapping(method = RequestMethod.POST, path="/atualizar_dataset")	
 	public void editDataset(@RequestBody AtualizacaoManual atualizacaoManual, HttpServletResponse response)
 	{
 		if(this.userServ.checarToken(atualizacaoManual.getCodigo()))
 		{
-			System.out.println("AtualizaÁ„o Manual!");
+			System.out.println("Atualiza√ß√£o Manual!");
 			this.updateServ.atualizacaoManual(atualizacaoManual);
 			response.setStatus(HttpServletResponse.SC_OK);
 		}
@@ -307,6 +313,42 @@ public class AdminRest {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		}
 		return new Gson().toJson(listFormats);
+	}
+	
+    @CrossOrigin(methods = {RequestMethod.POST})
+    @ApiOperation(value = "Realizar preserva√ß√£o de um conjunto de dados", nickname = "preservar_dataset", 
+    		notes="Esta rota permite preservar um conjunto de dados")
+    @RequestMapping(method = RequestMethod.POST, path="/preservar_dataset")	
+	public void preservarDataset(@RequestBody PreservarDataset preservarDataset, HttpServletResponse response)
+	{
+		if(this.userServ.checarToken(preservarDataset.getCodigo()))
+		{
+			System.out.println("Preserva√ß√£o!");
+			this.preservationServ.preservarDataset(preservarDataset);
+			response.setStatus(HttpServletResponse.SC_OK);
+		}
+		else
+		{
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		}
+	}
+    
+    @CrossOrigin(methods = {RequestMethod.GET})
+	@ApiOperation(value = "Lista dos metadados de um conjunto de dados", nickname = "getMetadata", 
+			notes="Esta rota permite listar os metadados de um conjunto de dados")
+	@RequestMapping(method = RequestMethod.GET, path="/{datasetTitle}/about/{codigo}")		
+	public String getMetadata(@PathVariable("datasetTitle") String datasetTitle,@PathVariable("codigo") String codigo, HttpServletResponse response)
+	{
+    	String resultado = "";
+		if(this.userServ.checarToken(codigo))
+		{
+			resultado = new Gson().toJson(this.accessServ.getMetadata(datasetTitle));
+		}
+		else
+		{
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		}
+		return resultado;
 	}
 	
 }

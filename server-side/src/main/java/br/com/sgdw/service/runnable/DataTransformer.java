@@ -40,20 +40,20 @@ public class DataTransformer implements Runnable{
 	
 	List<Map<String, Object>> dados;
 	
-	//Variáveis para XML
+	//VariÃ¡veis para XML
 	private Element collection = new Element("XML");
 	private Document doc;
 	
-	//Variáveis RDF
+	//VariÃ¡veis RDF
 	private Model model;
 	private String uriBase =  SoUtil.getUriBase()+"/find/";
 	private String domain = SoUtil.getDomain();
 	private String uriModel;
 	
-	//Variáveis JSON
+	//VariÃ¡veis JSON
 	private List<JsonObject> listJson;
 	
-	//Variáveis CSV
+	//VariÃ¡veis CSV
 	private Map<String, Object> firstElement;
 	private StringBuilder csv;
 	private String delimiter = ";";

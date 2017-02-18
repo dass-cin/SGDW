@@ -255,22 +255,24 @@ public class AccessServImpl implements AccessServ{
 	{
 		List<Map<String, Object>> dados = this.mongoRep.readCollection(MongoVariables.CONF_COLLECTION.valor);
 		List<Map<String, Object>> listaDeDatasets = new ArrayList<>();
-		
+		String preservado;
 		
 		if(dados != null)
 		{
 			for(Map<String, Object> dataset : dados)
-			{
-				Map<String, Object> map = new HashMap<>();
-				map.put(CollectionConfVariables.COLLECTION_NAME.valor, dataset.get(CollectionConfVariables.COLLECTION_NAME.valor));
-				map.put(CollectionConfVariables.COLLECTION_TITLE.valor, dataset.get(CollectionConfVariables.COLLECTION_TITLE.valor));
-				map.put(CollectionConfVariables.COLLECTION_DESCRIPTION.valor, dataset.get(CollectionConfVariables.COLLECTION_DESCRIPTION.valor));
-				map.put(CollectionConfVariables.COLLECTION_IDENTIFIER_URI.valor, dataset.get(CollectionConfVariables.COLLECTION_IDENTIFIER_URI.valor));
-				map.put(CollectionConfVariables.COLLECTION_THEME.valor, dataset.get(CollectionConfVariables.COLLECTION_THEME.valor));
-				map.put(CollectionConfVariables.COLLECTION_KEYWORDS.valor, dataset.get(CollectionConfVariables.COLLECTION_KEYWORDS.valor));
-				map.put(CollectionConfVariables.COLLECTION_PUBLISHER.valor, dataset.get(CollectionConfVariables.COLLECTION_PUBLISHER.valor));
-				
-				listaDeDatasets.add(map);
+			{	
+				preservado = dataset.get(CollectionConfVariables.COLLECTION_PRESERVE.valor).toString();
+				if (preservado.equals(CollectionConfVariables.PRESERVACAO_DEFAULT.valor)) {//remove os preservados
+					Map<String, Object> map = new HashMap<>();
+					map.put(CollectionConfVariables.COLLECTION_NAME.valor, dataset.get(CollectionConfVariables.COLLECTION_NAME.valor));
+					map.put(CollectionConfVariables.COLLECTION_TITLE.valor, dataset.get(CollectionConfVariables.COLLECTION_TITLE.valor));
+					map.put(CollectionConfVariables.COLLECTION_DESCRIPTION.valor, dataset.get(CollectionConfVariables.COLLECTION_DESCRIPTION.valor));
+					map.put(CollectionConfVariables.COLLECTION_IDENTIFIER_URI.valor, dataset.get(CollectionConfVariables.COLLECTION_IDENTIFIER_URI.valor));
+					map.put(CollectionConfVariables.COLLECTION_THEME.valor, dataset.get(CollectionConfVariables.COLLECTION_THEME.valor));
+					map.put(CollectionConfVariables.COLLECTION_KEYWORDS.valor, dataset.get(CollectionConfVariables.COLLECTION_KEYWORDS.valor));
+					map.put(CollectionConfVariables.COLLECTION_PUBLISHER.valor, dataset.get(CollectionConfVariables.COLLECTION_PUBLISHER.valor));
+					listaDeDatasets.add(map);
+				}
 			}
 		}
 		
@@ -290,8 +292,12 @@ public class AccessServImpl implements AccessServ{
 			collection.remove(CollectionConfVariables.COLLECTION_ID_NAME.valor);
 			collection.remove(MongoVariables.ID_COLLECTION.valor);
 			collection.remove(CollectionConfVariables.COLLECTION_NAME.valor);
-			
-			
+			String preservacao = Frequency.getFrequencyName(collection.get(CollectionConfVariables.COLLECTION_UPDATE_FREQUENCY.valor).toString());
+			if (preservacao == CollectionConfVariables.PRESERVACAO_DEFAULT.valor){
+				collection.remove(CollectionConfVariables.COLLECTION_PRESERVE_DESCRIPTION.valor);
+				collection.remove(CollectionConfVariables.COLLECTION_PRESERVE.valor);			
+			}
+						
 			String frequencia = Frequency.getFrequencyName(collection.get(CollectionConfVariables.COLLECTION_UPDATE_FREQUENCY.valor).toString());
 			collection.remove(CollectionConfVariables.COLLECTION_UPDATE_FREQUENCY.valor);
 			collection.put(CollectionConfVariables.COLLECTION_UPDATE_FREQUENCY.valor, frequencia);

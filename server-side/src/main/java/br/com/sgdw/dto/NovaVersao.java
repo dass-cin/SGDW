@@ -14,13 +14,16 @@ public class NovaVersao {
 	
 	private String query;
 	
-	public NovaVersao(String collectionName, String data, String description, String version, String novaDataAtualizacao, String query){
+	private String motivo;
+	
+	public NovaVersao(String collectionName, String data, String description, String version, String novaDataAtualizacao, String query, String motivo){
 		this.collectionName = collectionName;
 		this.data = data;
 		this.description = description;
 		this.version = version;
 		this.novaDataAtualizacao = novaDataAtualizacao;
 		this.query = query;
+		this.motivo = motivo;
 	}
 	
 	public String getCollectionName() {
@@ -69,6 +72,14 @@ public class NovaVersao {
 
 	public void setQuery(String query) {
 		this.query = query;
+	}
+
+	public String getMotivo() {
+		return motivo;
+	}
+
+	public void setMotivo(String motivo) {
+		this.motivo = motivo;
 	}
 	
 	

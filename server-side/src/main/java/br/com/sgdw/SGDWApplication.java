@@ -48,8 +48,8 @@ public class SGDWApplication extends SpringBootServletInitializer  {
     private ApiInfo apiInfo() {
     	return new ApiInfo( 
              "SGDW",
-             "Documentação gerada com o uso do Swagger. Dúvidas? Entrar em contato: https://github.com/dass-cin/sgdw",
-             "Uso aberto, sob Licença GPL v2",
+             "DocumentaÃ§Ã£o gerada com o uso do Swagger. DÃºvidas? Entrar em contato: https://github.com/dass-cin/sgdw",
+             "Uso aberto, sob LicenÃ§a GPL v2",
              "", //email
              "GPL v2",
              "https://github.com/dass-cin/SGDW/blob/master/LICENSE"  

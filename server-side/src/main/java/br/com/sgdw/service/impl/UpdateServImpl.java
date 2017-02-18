@@ -52,6 +52,7 @@ public class UpdateServImpl implements UpdateServ{
 		String codVersa = this.getCodVersao();
 		NovaCollection newCollection;
 		String novaDataAtualizacao;
+		String preservacao;
 		
 		Integer numLinhas = null;
 		Integer count = 0;
@@ -60,33 +61,36 @@ public class UpdateServImpl implements UpdateServ{
 		System.out.println("Atualizando dados...");
 		
 		for(Map<String, Object> i : conf)
-		{
-			if(verificarDataAtualizacao(i.get(CollectionConfVariables.COLLECTION_NEXT_UPDATE.valor).toString()))
-			{
-				sql = i.get(CollectionConfVariables.COLLECTION_QUERY.valor).toString();
-				collectionName = i.get(CollectionConfVariables.COLLECTION_NAME.valor).toString();
-				idName = i.get(CollectionConfVariables.COLLECTION_ID_NAME.valor).toString();
-				idDatabase = i.get(CollectionConfVariables.COLLECTION_ID_DB.valor).toString();
-				
-				dbConfig = this.mongoRep.getDbConfig(idDatabase);
-				this.mongoRep.setOldVersion(collectionName);
-				
-				numLinhas = this.originRep.contarLinhas(sql, dbConfig);
-					
-				do
+		{	
+			preservacao = i.get(CollectionConfVariables.COLLECTION_PRESERVE.valor).toString();
+			if (preservacao.equals(CollectionConfVariables.PRESERVACAO_DEFAULT.valor)) {
+				if(verificarDataAtualizacao(i.get(CollectionConfVariables.COLLECTION_NEXT_UPDATE.valor).toString()))
 				{
-					List<Map<String, Object>> dadosOrigem = this.originRep.executarSql(sql, count, dbConfig);
-					newCollection = new NovaCollection(collectionName, idName, dadosOrigem, codVersa);				
-					this.createServ.insertCollection(newCollection);
-					count += 500;
+					sql = i.get(CollectionConfVariables.COLLECTION_QUERY.valor).toString();
+					collectionName = i.get(CollectionConfVariables.COLLECTION_NAME.valor).toString();
+					idName = i.get(CollectionConfVariables.COLLECTION_ID_NAME.valor).toString();
+					idDatabase = i.get(CollectionConfVariables.COLLECTION_ID_DB.valor).toString();
+					
+					dbConfig = this.mongoRep.getDbConfig(idDatabase);
+					this.mongoRep.setOldVersion(collectionName);
+					
+					numLinhas = this.originRep.contarLinhas(sql, dbConfig);
+						
+					do
+					{
+						List<Map<String, Object>> dadosOrigem = this.originRep.executarSql(sql, count, dbConfig);
+						newCollection = new NovaCollection(collectionName, idName, dadosOrigem, codVersa);				
+						this.createServ.insertCollection(newCollection);
+						count += 500;
+					}
+					while(count < numLinhas);
+					
+					//Nova versÃ£o
+					novaDataAtualizacao = this.getAtualizacaoData(Frequency.getFrequency(i.get(CollectionConfVariables.COLLECTION_UPDATE_FREQUENCY.valor).toString()));
+					NovaVersao newVersion = new NovaVersao(collectionName, new Date().toString(), SystemMsg.HISTORY_AUTO_UPDATE.valor, codVersa, novaDataAtualizacao, sql, SystemMsg.HISTORY_AUTO_UPDATE.valor); 
+					this.versionServ.insertNewVersion(newVersion);
+	
 				}
-				while(count < numLinhas);
-				
-				//Nova versão
-				novaDataAtualizacao = this.getAtualizacaoData(Frequency.getFrequency(i.get(CollectionConfVariables.COLLECTION_UPDATE_FREQUENCY.valor).toString()));
-				NovaVersao newVersion = new NovaVersao(collectionName, new Date().toString(), SystemMsg.HISTORY_MANUAL_UPDATE.valor, codVersa, novaDataAtualizacao, sql); 
-				this.versionServ.insertNewVersion(newVersion);
-
 			}
 		}
 	}
@@ -104,15 +108,22 @@ public class UpdateServImpl implements UpdateServ{
 		String novaDataAtualizacao;
 		Integer count = 0;
 		NovaCollection newCollection;
+		String motivo;
+		String preservacao;
 		
 		Map<String, Object> configCollection = this.mongoRep.getById(atualizacao.getDatasetUri(), MongoVariables.CONF_COLLECTION.valor, CollectionConfVariables.COLLECTION_IDENTIFIER_URI.valor);
-		collectionName = configCollection.get(CollectionConfVariables.COLLECTION_NAME.valor).toString();
+		preservacao = configCollection.get(CollectionConfVariables.COLLECTION_PRESERVE.valor).toString();
+		if (preservacao.equals(CollectionConfVariables.PRESERVACAO_DEFAULT.valor)) {
+			
+			collectionName = configCollection.get(CollectionConfVariables.COLLECTION_NAME.valor).toString();
+		
 		query = configCollection.get(CollectionConfVariables.COLLECTION_QUERY.valor).toString();
 		idCollection = configCollection.get(CollectionConfVariables.COLLECTION_ID_NAME.valor).toString();
 		idDatabase = configCollection.get(CollectionConfVariables.COLLECTION_ID_DB.valor).toString();
 		dbConfig = this.mongoRep.getDbConfig(idDatabase);						
 		numLinhas = this.originRep.contarLinhas(query, dbConfig);
-		
+		motivo = atualizacao.getMotivo();		
+		System.out.println("MOTIVO:"+motivo);
 		do
 		{
 			List<Map<String, Object>> dadosOrigem = this.originRep.executarSql(query, count, dbConfig);
@@ -122,10 +133,11 @@ public class UpdateServImpl implements UpdateServ{
 		}
 		while(count < numLinhas);
 		
-		//Nova versão
+		//Nova versÃ£o
 		novaDataAtualizacao = this.getAtualizacaoData(Frequency.getFrequency(configCollection.get(CollectionConfVariables.COLLECTION_UPDATE_FREQUENCY.valor).toString()));
-		NovaVersao newVersion = new NovaVersao(collectionName, new Date().toString(), SystemMsg.HISTORY_MANUAL_UPDATE.valor, codVersa, novaDataAtualizacao, query); 
+		NovaVersao newVersion = new NovaVersao(collectionName, new Date().toString(), SystemMsg.HISTORY_MANUAL_UPDATE.valor, codVersa, novaDataAtualizacao, query, motivo); 
 		this.versionServ.insertNewVersion(newVersion);
+		}
 		
 	}
 	

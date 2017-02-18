@@ -6,7 +6,6 @@ public enum SystemMsg {
 	HISTORY_AUTO_UPDATE("Atualização automática dos dados"),
 	HISTORY_MANUAL_UPDATE("Atualizaçãoo manual (não programada) dos dados"),
 	
-	
 	ARQUIVO_BANCO_NAO_ENCONTRADO("O arquivo de configuração do banco de origem não foi encontrado"),
 	ERRO_DESCONHECIDO("Um erro desconhecido ocorreu"),
 	ERRO_NULLPOINTER_CONF("Um erro ocorreu na conexão com o SGBD, verifique o arquivo de configuração do banco de origem está preenchido corretamente"),

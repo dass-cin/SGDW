@@ -15,7 +15,7 @@
           url: '/dataset',
           template : '<ui-view  autoscroll="true" autoscroll-body-top></ui-view>',
           abstract: true,
-          title: 'Dataset',
+          title: 'Conj. de Dados',
           sidebarMeta: {
             icon: 'ion-grid',
             order: 300,
@@ -33,6 +33,20 @@
         })
         .state('dataset.details', {
           url: '/details/:collector_dataset',
+          templateUrl: 'app/pages/dataset/details/details.view.html',
+          title: 'Detalhes - Conjunto de Dados',
+          controller: 'DatasetDetailsCtrl',
+          controllerAs: 'vm',
+        })
+        .state('dataset.detailsAt', {
+          url: '/details/:collector_dataset/atualizado',
+          templateUrl: 'app/pages/dataset/details/details.view.html',
+          title: 'Detalhes - Conjunto de Dados',
+          controller: 'DatasetDetailsCtrl',
+          controllerAs: 'vm',
+        })
+        .state('dataset.detailsPre', {
+          url: '/details/:collector_dataset/preservado',
           templateUrl: 'app/pages/dataset/details/details.view.html',
           title: 'Detalhes - Conjunto de Dados',
           controller: 'DatasetDetailsCtrl',

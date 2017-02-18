@@ -15,6 +15,14 @@
     vm.linkUri                = getUriDownload();
     vm.rowCollection          = [];    
     vm.dataVersion            = [];
+    vm.rowCollectionPageSize  = 1;   
+
+    DatasetService.getPreservacao(vm.datasetURI).success(
+      function(data) {      
+          if (data==true) {
+             window.location = "410.html";
+          } 
+      }); 
 
     DatasetService.getAllFormats().success(
       function(data, status, headers, config) {      
@@ -27,7 +35,7 @@
     });   
 
     function getUriDownload(){
-      return apiUrl() + "find/" + vm.datasetURI + "/version/" + vm.version + "/format/";
+      return apiUrl() + "open/" + vm.datasetURI + "/version/" + vm.version + "/format/";
     };
 
     DatasetService.getByIdDataset($stateParams.collector_dataset).success(

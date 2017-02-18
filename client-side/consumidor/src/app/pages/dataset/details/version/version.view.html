@@ -1,7 +1,9 @@
 <div class="horizontal-scroll">
  <h1>{{vm.datasetTitle | uppercase}} (versão: {{vm.version}})</h1>
+ <div style="text-align: right; padding-right: 10px">
+  <a back class="btn btn-warning btn-xs">Voltar</a>
+ </div>
  <br>
-
   <div ba-panel ba-panel-title="Metadados" ba-panel-class="with-scroll">
   <table st-table="vm.rowCollection" class="table table-striped">
     <thead>
@@ -29,7 +31,7 @@
         </span>
       </div>
       <div class="col-md-6">
-        API <a href="">(ver documentação)</a>:
+        API
         <br clear="all">
         <span ng-repeat="opt in vm.download " ng-bind-html-unsafe="opt.text">
             <a href ng-show="opt.Formato != 'csv'" ng-href="{{vm.linkUri}}{{ opt.Formato }}" target="_blank" class="btn btn-default btn-with-icon"><i class="ion-arrow-swap"></i>{{ opt.Formato | uppercase }}</a>

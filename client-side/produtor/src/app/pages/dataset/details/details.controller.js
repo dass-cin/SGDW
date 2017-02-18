@@ -5,18 +5,23 @@
     .module('BlurAdmin.pages.dataset')
     .controller('DatasetDetailsCtrl', DatasetDetailsCtrl);
 
-    function DatasetDetailsCtrl($stateParams, $scope, DatasetService, toastr) {
+    function DatasetDetailsCtrl($stateParams, $scope, DatasetService, toastr, $location, $timeout, $rootScope) {
 
     var vm = this;
-    vm.datasetURI             = $stateParams.collector_dataset;
-    vm.download               = {};
-    vm.api                    = {};
-    vm.linkMetadadosApi       = getApiMetadados();
-    vm.linkUri                = getUriDownload();
-    vm.datasetAtualizar       = {};
-    vm.linkVersoes            = getApiVersoes();
-    vm.atualizarDatasetSubmit = atualizar;
-    vm.rowCollection          = [];    
+    vm.datasetURI                 = $stateParams.collector_dataset;
+    vm.download                   = {};
+    vm.api                        = {};
+    vm.linkMetadadosApi           = getApiMetadados();
+    vm.linkUri                    = getUriDownload();
+    vm.datasetAtualizar           = {};
+    vm.linkVersoes                = getApiVersoes();
+    vm.atualizarDatasetSubmit     = atualizar;
+    vm.preservarDatasetSubmit     = preservar;
+    vm.rowCollection              = [];    
+    vm.processandoTexto           = "Processar";
+    vm.processandoTextoPreservar  = "Preservar";
+    vm.rowCollectionPageSize      = 1;   
+    vm.datasetVerificar           = [];
 
     DatasetService.getAllFormats().success(
       function(data, status, headers, config) {      
@@ -40,28 +45,32 @@
       return apiUrl() + "open/" + vm.datasetURI + "/list_versions";
     }
 
-    DatasetService.getByIdDataset($stateParams.collector_dataset).success(
+    DatasetService.getByIdDataset(vm.datasetURI, JSON.parse(getCurrentUser()).codigo).success(
       function(data, status, headers, config) {
          
           vm.rowCollectionDetails = data;
           vm.proxAtualizacao = vm.rowCollectionDetails.next_update;
           vm.datasetTitle = vm.rowCollectionDetails.dataset_title;
-          toastr.success("Dados carregados", 'Sucesso!');
+          vm.status = vm.rowCollectionDetails.presevation;
+          vm.preservado = false;
+          if (vm.status != "Publicado"){
+            vm.preservado = true;
+          }
+          toastr.success("Dados carregados", 'Sucesso!');     
 
       }).error(function(data, status, headers, config) {      
-
-         toastr.error("Erro ao carregar os dados dos Conjuntos de Dados", 'Erro!'); //success,info,warning
+           toastr.error("Erro ao carregar os dados dos Conjuntos de Dados", 'Erro!'); //success,info,warning
 
     });    
 
     function atualizar() {
       vm.datasetAtualizar.datasetUri = vm.datasetURI;
       vm.datasetAtualizar.codigo = JSON.parse(getCurrentUser()).codigo; //add token
-
+      vm.processandoTexto = "Processando";
       DatasetService.setAtualizarDataset(vm.datasetAtualizar,function (result) {
           if (result === true) {
             toastr.info("Conjunto de dados ATUALIZADO com sucesso!", 'Sucesso!');
-            $location.path('/dataset/'+ vm.datasetURI);
+            window.location='./#/dataset/details/'+ vm.datasetURI + '/atualizado';
           } else {
               toastr.error("Erro ao Atualizar Conjunto de Dados!", 'Erro!'); //success,info,warning
           }
@@ -69,6 +78,20 @@
 
     };
 
+    function preservar() {
+      vm.preservar.datasetUri = vm.datasetURI;
+      vm.preservar.codigo = JSON.parse(getCurrentUser()).codigo; //add token
+      vm.processandoTextoPreservar = "Preservando";
+      DatasetService.setPreservarDataset(vm.preservar,function (result) {
+          if (result === true) {
+            toastr.warning("Conjunto de dados PRESERVADO!", 'Sucesso!');
+            window.location='./#/dataset/details/'+ vm.datasetURI + '/preservado';
+          } else {
+              toastr.error("Erro ao Preservar Conjunto de Dados!", 'Erro!'); //success,info,warning
+          }
+      });
+
+    };
     
     DatasetService.getAllVersions(vm.datasetURI).success(
       function(data, status, headers, config) {

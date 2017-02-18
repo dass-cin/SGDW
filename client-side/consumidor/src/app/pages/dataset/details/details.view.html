@@ -1,5 +1,8 @@
 <div class="horizontal-scroll">
  <h1>{{vm.datasetTitle | uppercase}}</h1>
+ <div style="text-align: right; padding-right: 10px">
+  <a back class="btn btn-warning btn-xs">Voltar</a>
+ </div> 
  <br>
 
   <div ba-panel ba-panel-title="Metadados <a href ng-href='{{vm.linkMetadadosApi}}' target='_blank' class='right btn btn-default btn-with-icon btn-xs'><i class='ion-arrow-swap'></i> Metadados em JSON</a>" ba-panel-class="with-scroll">
@@ -39,11 +42,17 @@
   </div>
 
   <div ba-panel ba-panel-title="Versões <a href ng-href='{{vm.linkVersoes}}' target='_blank' class='right btn btn-default btn-with-icon btn-xs'><i class='ion-arrow-swap'></i> Versões em JSON</a>" ba-panel-class="with-scroll">
+    <div class="form-group select-page-size-wrap ">
+      <label>Rows on page
+        <select class="form-control show-tick" title="Rows on page" ng-model="rowCollectionPageSize" ng-options="i for i in [5,10,15,20,25]">
+        </select>
+      </label>
+    </div>
     <div class="horizontal-scroll">
       <table st-safe-src="vm.rowCollection" st-table="rowCollectionData" class="table table-striped">
         <thead>
         <tr class="sortable">
-          <th class="table-id" st-sort="id" st-sort-default="true">#Id_Versão</th>
+          <th class="table-id" st-sort="id" st-sort-default="reverse">#Id_Versão</th>
           <th st-sort="description">Descrição</th>
           <th st-sort="date">Data/Hora</th>
         </tr>
@@ -62,7 +71,13 @@
           <td>{{row.date}}</td>
         </tr>
         </tbody>
-
+        <tfoot>
+          <tr>
+            <td colspan="3" class="text-center">
+              <div st-pagination="" st-items-by-page="rowCollectionPageSize" st-displayed-pages="5"></div>
+            </td>
+          </tr>
+        </tfoot>
       </table>
     </div>
 

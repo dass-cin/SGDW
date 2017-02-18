@@ -1,5 +1,8 @@
 <div class="horizontal-scroll">
  <h1>{{vm.datasetTitle | uppercase}}</h1>
+ <div style="text-align: right; padding-right: 10px">
+  <a back class="btn btn-warning btn-xs">Voltar</a>
+ </div> 
  <br>
 
   <div ba-panel ba-panel-title="Metadados <a href ng-href='{{vm.linkMetadadosApi}}' target='_blank' class='right btn btn-default btn-with-icon btn-xs'><i class='ion-arrow-swap'></i> Metadados em JSON</a>" ba-panel-class="with-scroll">
@@ -29,7 +32,7 @@
         </span>
       </div>
       <div class="col-md-6">
-        API <a href="">(ver documentação)</a>:
+        API <a href="http://sgdw2.cloudapp.net:8080/">(ver documentação)</a>:
         <br clear="all">
         <span ng-repeat="opt in vm.download " ng-bind-html-unsafe="opt.text">
             <a href ng-show="opt.Formato != 'csv'" ng-href="{{vm.linkUri}}{{ opt.Formato }}" target="_blank" class="btn btn-default btn-with-icon"><i class="ion-arrow-swap"></i>{{ opt.Formato | uppercase }}</a>
@@ -39,11 +42,17 @@
   </div>
 
   <div ba-panel ba-panel-title="Versões <a href ng-href='{{vm.linkVersoes}}' target='_blank' class='right btn btn-default btn-with-icon btn-xs'><i class='ion-arrow-swap'></i> Versões em JSON</a>" ba-panel-class="with-scroll">
+    <div class="form-group select-page-size-wrap ">
+      <label>Rows on page
+        <select class="form-control show-tick" title="Rows on page" ng-model="rowCollectionPageSize" ng-options="i for i in [5,10,15,20,25]">
+        </select>
+      </label>
+    </div>
     <div class="horizontal-scroll">
       <table st-safe-src="vm.rowCollection" st-table="rowCollectionData" class="table table-striped">
         <thead>
         <tr class="sortable">
-          <th class="table-id" st-sort="id" st-sort-default="true">#Id_Versão</th>
+          <th class="table-id" st-sort="id" st-sort-default="reverse">#Id_Versão</th>
           <th st-sort="description">Descrição</th>
           <th st-sort="date">Data/Hora</th>
         </tr>
@@ -62,23 +71,69 @@
           <td>{{row.date}}</td>
         </tr>
         </tbody>
-
+        <tfoot>
+          <tr>
+            <td colspan="3" class="text-center">
+              <div st-pagination="" st-items-by-page="rowCollectionPageSize" st-displayed-pages="5"></div>
+            </td>
+          </tr>
+        </tfoot>
       </table>
     </div>
 
   </div>
   
-  <div ba-panel ba-panel-title="Atualização" ba-panel-class="with-scroll">
+  <div ba-panel ba-panel-title="Atualização" ba-panel-class="with-scroll" ng-if="!vm.preservado">
     <div class="col-md-12">
       Próxima Atualização: {{vm.proxAtualizacao}} 
       <br clear="all" /><br clear="all" />
-      <form name="vm.atualizarDataset" novalidate ng-submit="vm.atualizarDatasetSubmit()">
-        <div class="form-group" ng-class="{'has-error': vm.atualizarDataset.description.$invalid && (vm.atualizarDataset.description.$dirty || vm.atualizarDataset.$submitted)}">
-          <label for="description">Motivo da atualização não programada:</label>
-          <input type="text" class="form-control" id="description" name="description" placeholder="Informe o porquê de atualizar o conjunto de dados antes de sua frequência de atualização" ng-model="vm.atualizacao.description" required="true">
+      <form name="vm.atualizarDataset" novalidate>
+        <div class="form-group" ng-class="{'has-error': vm.atualizarDataset.motivo.$invalid && (vm.atualizarDataset.motivo.$dirty || vm.atualizarDataset.$submitted)}">
+          <label for="motivo">Motivo da atualização não programada:</label>
+          <input type="text" class="form-control" id="motivo" name="motivo" placeholder="Informe o porquê de atualizar o conjunto de dados antes de sua frequência de atualização" ng-model="vm.datasetAtualizar.motivo" required="true">
           <span class="help-block error-block basic-block">Required</span>
         </div>
-        <button type="submit" class="btn btn-primary" data-ng-disabled="!vm.atualizacao.description"><i class="fa fa-refresh"></i> Processar</button>
+        <button progress-button="vm.atualizarDatasetSubmit()" type="submit" class="btn btn-primary" data-ng-disabled="!vm.datasetAtualizar.motivo">
+            <span ng-show="vm.processandoTexto == 'Processar'">
+                <i class="ion-loop"></i>
+            </span>
+            {{ vm.processandoTexto }}
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div ba-panel ba-panel-title="Preservação" ba-panel-class="with-scroll">
+    <div class="col-md-12">
+      Status Atual: <b>{{vm.status | uppercase}}</b> 
+      <form name="vm.preservarDataset" novalidate>
+        <div class="form-group" ng-class="{'has-error': vm.preservarDataset.description.$invalid && (vm.preservarDataset.description.$dirty || vm.preservarDataset.$submitted)}">
+
+            <br />
+            <label for="type">Tipo: </label>
+            <br />
+            <label class="radio-inline custom-radio nowrap">
+              <input type="radio" name="type" id="type" value="Completa Remocao" ng-model="vm.preservar.type">
+              <span>Completa Remoção</span>
+            </label>
+            <label class="radio-inline custom-radio nowrap">
+              <input type="radio" name="type" id="type" value="Publicado" ng-model="vm.preservar.type">
+              <span>Reativar</span>
+            </label>
+            <br />
+            <br />
+            <label for="description">Motivo da preservação/reativação:</label>
+            <br />
+            <input type="text" class="form-control" id="description" name="description" placeholder="Informe o porquê de atualizar o conjunto de dados antes de sua frequência de atualização" ng-model="vm.preservar.description" required="true">
+            <span class="help-block error-block basic-block">Required</span>
+
+        </div>
+        <button progress-button="vm.preservarDatasetSubmit()" type="submit" class="btn btn-primary" data-ng-disabled="!vm.preservar.description || !vm.preservar.type">
+            <span ng-show="vm.processandoTextoPreservar == 'Preservar'">
+                <i class="ion-close"></i>
+            </span>
+            {{ vm.processandoTextoPreservar }}
+        </button>
       </form>
     </div>
   </div>

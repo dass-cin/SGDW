@@ -1,7 +1,7 @@
 <div class="horizontal-scroll">
   <div class="form-group select-page-size-wrap ">
     <label>Rows on page
-      <select class="form-control show-tick" title="Rows on page" ng-model="smartTablePageSize" ng-options="i for i in [5,10,15,20,25]">
+      <select class="form-control show-tick" title="Rows on page" ng-model="rowCollectionPageSize" ng-options="i for i in [5,10,15,20,25]">
       </select>
     </label>
   </div>
@@ -13,6 +13,7 @@
       <th st-sort="publisher">Publicador</th>
       <th st-sort="theme">Categoria</th>
       <th st-sort="creator">Criador</th>
+      <th st-sort="status">Status</th>     
     </tr>
     <tr>
         <th></th>
@@ -23,6 +24,8 @@
                    type="search"/></th>
         <th><input st-search="creator" placeholder="Filtrar por Próx. Atualização" class="input-sm form-control search-input"
                    type="search"/></th>
+        <th><input st-search="presevation" placeholder="Filtrar por Preservação" class="input-sm form-control search-input"
+                   type="search"/></th>
       </tr>  
     </thead>
     <tbody>
@@ -32,11 +35,12 @@
       <td>{{row.publisher}}</td>
       <td>{{row.theme}}</td>
       <td>{{row.creator}}</td>
+      <td>{{row.presevation}}</td>
     </tr>
     </tbody>
     <tfoot>
       <tr>
-        <td colspan="5" class="text-center">
+        <td colspan="6" class="text-center">
           <div st-pagination="" st-items-by-page="rowCollectionPageSize" st-displayed-pages="5"></div>
         </td>
       </tr>

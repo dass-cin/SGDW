@@ -21,6 +21,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import br.com.sgdw.dto.CollectorQuery;
 import br.com.sgdw.dto.TokenAutenticacao;
 import br.com.sgdw.service.AccessServ;
+import br.com.sgdw.service.PreservationServ;
 import br.com.sgdw.service.UpdateServ;
 import br.com.sgdw.service.VersionServ;
 import br.com.sgdw.util.constantes.Formats;
@@ -35,24 +36,48 @@ public class OpenRest {
 	UpdateServ updateServ;
 	
 	@Autowired
-	AccessServ collectorServ;
+	AccessServ accessServ;
 	
 	@Autowired
 	VersionServ versionServ;
+	
+	@Autowired
+	PreservationServ preservationServ;
 	
 	@CrossOrigin(methods = {RequestMethod.GET})
 	@ApiOperation(value = "Retornar dados de um conjunto de dados", nickname = "buscar", 
 			notes="Esta rota permite retornar dados de um conjunto de dados")
 	@RequestMapping(method = RequestMethod.GET, path="/{datasetTitle}")
 	public String buscarTudo(@PathVariable("datasetTitle") String datasetTitle, HttpServletResponse response)
-	{	
-		    getResponse(Formats.JSON.valor, response, datasetTitle);
-			return this.collectorServ.getCompleteDataset(datasetTitle, Formats.JSON.valor);
+	{		
+			String resultado;
+			if (!this.preservationServ.verificarPreservacao(datasetTitle))
+			{
+				getResponse(Formats.JSON.valor, response, datasetTitle);
+				resultado = this.accessServ.getCompleteDataset(datasetTitle, Formats.JSON.valor);
+			}
+			else
+			{
+				response.setStatus(HttpServletResponse.SC_GONE);
+				response.setHeader("Motivo", this.preservationServ.motivoPreservacao(datasetTitle));
+				resultado = this.preservationServ.motivoPreservacao(datasetTitle);
+			}
+			return resultado;
 	}
 	
 	@CrossOrigin(methods = {RequestMethod.GET})
-	@ApiOperation(value = "Listar versıes de um conjunto de dados", nickname = "buscarVersoes", 
-			notes="Esta rota permite realizar listar as versıes de um conjunto de dados")
+	@ApiOperation(value = "Retorna se um conjunto de dados est√° preservado", nickname = "verifica_preservacao", 
+			notes="Esta rota permite retornar se um conjunto de dados est√° ou n√£o preservado")
+	@RequestMapping(method = RequestMethod.GET, path="/{datasetTitle}/verificar_preservacao")
+	public Boolean verificarPreservacao(@PathVariable("datasetTitle") String datasetTitle, HttpServletResponse response)
+	{		
+		return this.preservationServ.verificarPreservacao(datasetTitle);
+	}
+	
+	
+	@CrossOrigin(methods = {RequestMethod.GET})
+	@ApiOperation(value = "Listar vers√µes de um conjunto de dados", nickname = "buscarVersoes", 
+			notes="Esta rota permite realizar listar as vers√µes de um conjunto de dados")
 	@RequestMapping(method = RequestMethod.GET, path="/{datasetTitle}/list_versions")
 	public String buscarVersoes(@PathVariable("datasetTitle") String datasetTitle, HttpServletResponse response)
 	{	
@@ -67,20 +92,20 @@ public class OpenRest {
 	public String buscarPorId(@PathVariable("datasetTitle") String datasetTitle, @PathVariable("id") String id, HttpServletResponse response)
 	{	
 		    getResponse(Formats.JSON.valor, response, datasetTitle);
-			return this.collectorServ.getById(datasetTitle, id, Formats.JSON.valor);	
+			return this.accessServ.getById(datasetTitle, id, Formats.JSON.valor);	
 	}
 	
 	@CrossOrigin(methods = {RequestMethod.GET})
-	@ApiOperation(value = "Formatar conjunto de dados em uma distribuiÁ„o (formato) especificada", nickname = "buscarTudoComFormato", 
+	@ApiOperation(value = "Formatar conjunto de dados em uma distribui√ß√£o (formato) especificada", nickname = "buscarTudoComFormato", 
 			notes="Esta rota permite formatar conjunto de dados em um formato especificado")
 	@RequestMapping(method = RequestMethod.GET, path="/{datasetTitle}/format/{formato}")
 	public String buscarTudoComFormato(@PathVariable("datasetTitle") String datasetTitle, @PathVariable("formato") String formato, HttpServletResponse response)
 	{	
-			//String dados = collectorServ.getCompleteCollection(datasetTitle, formato);
-			String dados = this.collectorServ.getCompleteDataset(datasetTitle, formato);
+			//String dados = accessServ.getCompleteCollection(datasetTitle, formato);
+			String dados = this.accessServ.getCompleteDataset(datasetTitle, formato);
 			if (dados == null) {
 
-				dados = this.collectorServ.getCompleteCollection(datasetTitle, formato);
+				dados = this.accessServ.getCompleteCollection(datasetTitle, formato);
 			}
 			if(dados != null)
 			{
@@ -90,8 +115,8 @@ public class OpenRest {
 	}
 
 	@CrossOrigin(methods = {RequestMethod.GET})
-	@ApiOperation(value = "Retornar dados de uma vers„o em um formato especÌfico", nickname = "buscarPorVersao", 
-			notes="Esta rota permite retornar dados de uma vers„o em um formato especÌfico")
+	@ApiOperation(value = "Retornar dados de uma vers√£o em um formato espec√≠fico", nickname = "buscarPorVersao", 
+			notes="Esta rota permite retornar dados de uma vers√£o em um formato espec√≠fico")
 	@RequestMapping(method = RequestMethod.GET, path="/{datasetTitle}/version/{versionId}/format/{format}")
 	public String buscarPorVersao(@PathVariable("datasetTitle") String datasetTitle, @PathVariable("versionId") String versionId, @PathVariable("format") String formato, HttpServletResponse response)
 	{
@@ -110,8 +135,8 @@ public class OpenRest {
 	}
 	
 	@CrossOrigin(methods = {RequestMethod.GET})
-	@ApiOperation(value = "Download de uma vers„o do conjunto de dados em um formato especÌfico", nickname = "buscarPorVersaoDownload", 
-			notes="Esta rota permite fazer download de uma vers„o do conjunto de dados em um formato especÌfico")
+	@ApiOperation(value = "Download de uma vers√£o do conjunto de dados em um formato espec√≠fico", nickname = "buscarPorVersaoDownload", 
+			notes="Esta rota permite fazer download de uma vers√£o do conjunto de dados em um formato espec√≠fico")
 	@RequestMapping(method = RequestMethod.GET, path="/{datasetTitle}/version/{versionId}/format/{format}/download")
 	public String buscarPorVersaoDownload(@PathVariable("datasetTitle") String datasetTitle, @PathVariable("versionId") String versionId, @PathVariable("format") String formato, HttpServletResponse response)
 	{
@@ -130,12 +155,12 @@ public class OpenRest {
 	}
 	
 	@CrossOrigin(methods = {RequestMethod.GET})
-	@ApiOperation(value = "Download de parte dos dados em um formato especÌfico", nickname = "buscarPorIdFormatoDownload", 
-			notes="Esta rota permite fazer download de parte dos dados em um formato especÌfico")
+	@ApiOperation(value = "Download de parte dos dados em um formato espec√≠fico", nickname = "buscarPorIdFormatoDownload", 
+			notes="Esta rota permite fazer download de parte dos dados em um formato espec√≠fico")
 	@RequestMapping(method = RequestMethod.GET, path="/{datasetTitle}/{id}/format/{formato}/download")
 	public String buscarPorIdFormatoDownload(@PathVariable("datasetTitle") String datasetTitle, @PathVariable("id") String id, @PathVariable("formato") String formato, HttpServletResponse response)
 	{	
-			String dados = this.collectorServ.getById(datasetTitle, id, formato);
+			String dados = this.accessServ.getById(datasetTitle, id, formato);
 			
 			if(dados != null)
 			{
@@ -145,13 +170,13 @@ public class OpenRest {
 	}	
 	
 	@CrossOrigin(methods = {RequestMethod.GET})
-	@ApiOperation(value = "Download do conjunto de dados em um formato especÌfico", nickname = "buscarTudoComFormatoDownload", 
-			notes="Esta rota permite fazer download dos dados em um formato especÌfico")
+	@ApiOperation(value = "Download do conjunto de dados em um formato espec√≠fico", nickname = "buscarTudoComFormatoDownload", 
+			notes="Esta rota permite fazer download dos dados em um formato espec√≠fico")
 	@RequestMapping(method = RequestMethod.GET, path="/{datasetTitle}/format/{formato}/download")	
 	public String buscarTudoComFormatoDownload(@PathVariable("datasetTitle") String datasetTitle, @PathVariable("formato") String formato, HttpServletResponse response)
 	{	
-			//String dados = collectorServ.getCompleteCollection(datasetTitle, formato);
-			String dados = this.collectorServ.getCompleteDataset(datasetTitle, formato);
+			//String dados = accessServ.getCompleteCollection(datasetTitle, formato);
+			String dados = this.accessServ.getCompleteDataset(datasetTitle, formato);
 			
 			if(dados != null)
 			{
@@ -161,14 +186,14 @@ public class OpenRest {
 	}
 	
 	@CrossOrigin(methods = {RequestMethod.GET})
-	@ApiOperation(value = "Lista dos conjuntos de dados (p˙blico)", nickname = "listDatasetsP", 
+	@ApiOperation(value = "Lista dos conjuntos de dados (p√∫blico)", nickname = "listDatasetsP", 
 			notes="Esta rota permite listar os conjuntos de dados")
 	@RequestMapping(method = RequestMethod.GET, path="/list_datasets")		
 	public String listDatasets(HttpServletResponse response)
 	{
 		getResponse("json", response, null);
 		
-		return this.collectorServ.getDatasetsNames();
+		return this.accessServ.getDatasetsNames();
 	}
 	
 	@CrossOrigin(methods = {RequestMethod.GET})
@@ -177,14 +202,24 @@ public class OpenRest {
 	@RequestMapping(method = RequestMethod.GET, path="/{datasetTitle}/about")		
 	public String getMetadata(@PathVariable("datasetTitle") String datasetTitle, HttpServletResponse response)
 	{
-		getResponse("json", response, null);
-		
-		return new Gson().toJson(this.collectorServ.getMetadata(datasetTitle));
+		String resultado;
+		if (!this.preservationServ.verificarPreservacao(datasetTitle))
+		{
+			getResponse("json", response, null);
+			resultado = new Gson().toJson(this.accessServ.getMetadata(datasetTitle));
+		}
+		else
+		{
+			response.setStatus(HttpServletResponse.SC_GONE);
+			response.setHeader("Motivo", this.preservationServ.motivoPreservacao(datasetTitle));
+			resultado = this.preservationServ.motivoPreservacao(datasetTitle);
+		}
+		return resultado;
 	}
 	
 	@CrossOrigin(methods = {RequestMethod.GET})
-	@ApiOperation(value = "Lista dos metadados de uma vers„o do conjuntos de dados", nickname = "getMetadataVersion", 
-			notes="Esta rota permite listar os metadados de uma vers„o do conjuntos de dados")
+	@ApiOperation(value = "Lista dos metadados de uma vers√£o do conjuntos de dados", nickname = "getMetadataVersion", 
+			notes="Esta rota permite listar os metadados de uma vers√£o do conjuntos de dados")
 	@RequestMapping(method = RequestMethod.GET, path="/{datasetTitle}/about/{version}")		
 	public String getMetadataVersion(@PathVariable("datasetTitle") String datasetTitle, @PathVariable("version") String version, HttpServletResponse response)
 	{
@@ -202,7 +237,7 @@ public class OpenRest {
 	{
 		getResponse(query.getFormat(), response, query.getDatasetName());
 		
-		return this.collectorServ.getByQuery(query);
+		return this.accessServ.getByQuery(query);
 	}
 	
 	@CrossOrigin(methods = {RequestMethod.GET})
@@ -211,7 +246,7 @@ public class OpenRest {
     @RequestMapping(method = RequestMethod.GET, path="/list_formats")	
 	public List<Map<String, Object>> listFormats(HttpServletResponse response)
 	{
-		return this.collectorServ.listFormats();
+		return this.accessServ.listFormats();
 	}
 	
 	private void getResponseDownload(String format, HttpServletResponse response, String collection)

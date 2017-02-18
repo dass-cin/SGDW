@@ -119,6 +119,7 @@ public class VersionServImpl implements VersionServ{
 		novoHistorico.put(CollectionHistory.DATE.valor, newVersion.getData());
 		novoHistorico.put(CollectionHistory.DESCRIPTION.valor, newVersion.getDescription());
 		novoHistorico.put(CollectionHistory.VERSION.valor, newVersion.getVersion());
+		novoHistorico.put(CollectionHistory.MOTIVO.valor, newVersion.getMotivo());
 				
 		this.mongoRep.insert(novoHistorico, newVersion.getCollectionName()+MongoVariables.HISTORY_COLLECTION.valor);
 		this.mongoRep.updateData(newVersion.getCollectionName(),newVersion.getNovaDataAtualizacao(), newVersion.getVersion(), newVersion.getQuery());

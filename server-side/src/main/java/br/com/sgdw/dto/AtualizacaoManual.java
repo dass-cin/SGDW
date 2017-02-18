@@ -12,6 +12,8 @@ public class AtualizacaoManual{
 	
 	private String codigo;
 	
+	private String motivo;
+	
 	public AtualizacaoManual()
 	{
 		
@@ -55,6 +57,14 @@ public class AtualizacaoManual{
 
 	public void setNewId(String newId) {
 		this.newId = newId;
+	}
+
+	public String getMotivo() {
+		return motivo;
+	}
+
+	public void setMotivo(String motivo) {
+		this.motivo = motivo;
 	}	
 	
 }

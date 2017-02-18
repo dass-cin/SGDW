@@ -14,7 +14,8 @@
             getByIdDataset: _getByIdDataset,
             getAllFormats: _getAllFormats,
             getAllVersions: _getAllVersions,
-            getByVersion: _getByVersion
+            getByVersion: _getByVersion,
+            getPreservacao: _getPreservacao,            
         };
 
         return service;
@@ -55,6 +56,12 @@
                 });
         }; 
         
+        function _getPreservacao (dataset) {
+            return $http({
+                    url: apiUrl() + 'open/' + dataset + "/verificar_preservacao",
+                    method: 'GET'
+                });
+        }; 
 
     }
 
